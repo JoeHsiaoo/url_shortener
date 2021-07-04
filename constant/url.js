@@ -1,0 +1,5 @@
+export default {
+  ID_LENGTH: 10,
+  REDIS_TTL_IN_SECOND: 600,
+  NON_EXIST_ID_CACHED_MAX_AGE_IN_SECOND: 600,
+};

@@ -8,6 +8,8 @@ import 'dotenv/config.js';
 import app from '../app.js';
 import debug from 'debug';
 import http from 'http';
+import sequelize from '../configs/database.js';
+import redis from '../configs/redis.js';
 
 /**
  * Get port from environment and store in Express.
@@ -26,9 +28,28 @@ const server = http.createServer(app);
  * Listen on provided port, on all network interfaces.
  */
 
-server.listen(port);
-server.on('error', onError);
-server.on('listening', onListening);
+const init = async () => {
+  try {
+    await sequelize.authenticate();
+    console.log('Database connection has been established successfully.');
+    await sequelize.sync({alter: true});
+    console.log('Database sync successfully!');
+    await redis.connect();
+    console.log('Redis connection has been established successfully.');
+  } catch (err) {
+    throw new Error('Unable to connect to the database:', err);
+  }
+};
+
+init()
+  .then(() => {
+    server.listen(port);
+    server.on('error', onError);
+    server.on('listening', onListening);
+  })
+  .catch(err => {
+    throw new Error(err);
+  });
 
 /**
  * Normalize a port into a number, string, or false.
@@ -59,9 +80,7 @@ function onError(error) {
     throw error;
   }
 
-  const bind = typeof port === 'string'
-    ? 'Pipe ' + port
-    : 'Port ' + port;
+  const bind = typeof port === 'string' ? 'Pipe ' + port : 'Port ' + port;
 
   // handle specific listen errors with friendly messages
   switch (error.code) {
@@ -84,8 +103,6 @@ function onError(error) {
 
 function onListening() {
   const addr = server.address();
-  const bind = typeof addr === 'string'
-    ? 'pipe ' + addr
-    : 'port ' + addr.port;
+  const bind = typeof addr === 'string' ? 'pipe ' + addr : 'port ' + addr.port;
   debug('url-shortener:server')('Listening on ' + bind);
 }
