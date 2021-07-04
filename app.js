@@ -1,9 +1,13 @@
 import express from 'express';
 import logger from 'morgan';
+import rateLimit from 'express-rate-limit';
+
 import router from './routes/index.js';
+import rateLimitConfig from './configs/rateLimit.js';
 
 const app = express();
 
+app.use(rateLimit(rateLimitConfig));
 app.use(logger('dev'));
 app.use(express.json());
 
