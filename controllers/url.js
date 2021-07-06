@@ -1,7 +1,7 @@
 import urlService from '../services/url.js';
 import URL from '../constant/url.js';
 
-const {HOST} = process.env;
+const {HOST, PORT} = process.env;
 
 const getUrl = async (req, res) => {
   try {
@@ -27,7 +27,7 @@ const createUrl = async (req, res) => {
     const {url, expireAt} = req.body;
     const urlDoc = await urlService.createUrl(url, new Date(expireAt));
 
-    return res.send({id: urlDoc.id, shortUrl: `${HOST}/${urlDoc.id}`});
+    return res.send({id: urlDoc.id, shortUrl: `${HOST}:${PORT}/${urlDoc.id}`});
   } catch (err) {
     return res.status(500).send('Internal server error');
   }

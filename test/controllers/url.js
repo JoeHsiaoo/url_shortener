@@ -7,7 +7,7 @@ import URL from '../../constant/url.js';
 import urlMock from '../../mocks/url.js';
 import responseMock from '../../mocks/response.js';
 
-const {HOST} = process.env;
+const {HOST, PORT} = process.env;
 
 describe('Url controllers', function () {
   it('createUrlController should return id and shortUrl', async function () {
@@ -22,7 +22,7 @@ describe('Url controllers', function () {
     urlService.createUrl.restore();
 
     expect(response.data.id).to.equal(urlMock.id);
-    expect(response.data.shortUrl).to.equal(HOST + '/' + urlMock.id);
+    expect(response.data.shortUrl).to.equal(`${HOST}:${PORT}/${urlMock.id}`);
   });
 
   it('getUrlController with correct urlId should return status 301 and Location header', async function () {
